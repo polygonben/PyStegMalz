@@ -1,8 +1,13 @@
 #!/usr/bin/python
 from PIL import Image
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument('-s','--shellcode', required=True, help='Please supply file path to shellcode text file')
+parser.add_argument('-i','--image', required=True, help='Please supply file path to image file to be encoded') 
+args = parser.parse_args()
 
-with open('shellcode.txt', 'r') as shellcode:
+with open(args.shellcode, 'r') as shellcode:
     shellcode_in_text_file = shellcode.read().rstrip().replace('\n','').replace('buf += b', '')
     
 
@@ -50,10 +55,10 @@ def encode_lsb(image_path, plaintext_data, output_path):
 
     # Output
     encoded_image.save(output_path)
-    print("Payload encoded and image saved successfully.")
+    print("Payload encoded and image saved to: poc_{}".format(image_path))
 
 # Example usage:
 if __name__ == "__main__":
-    image_path = "example.png"
+    image_path = args.image
     encode_lsb(image_path, shellcode_in_text_file, "poc_{}".format(image_path))
 

