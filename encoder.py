@@ -1,10 +1,10 @@
 #!/usr/bin/python
 from PIL import Image
-import numpy as np 
+
 
 with open('shellcode.txt', 'r') as shellcode:
-    shellcode_as_text_test = shellcode.read().rstrip().replace('\n','')
-    print(shellcode_as_text_test)
+    shellcode_in_text_file = shellcode.read().rstrip().replace('\n','').replace('buf += b', '')
+    
 
 
 def text_to_binary(text_data):
@@ -31,7 +31,7 @@ def encode_lsb(image_path, plaintext_data, output_path):
     if data_length > max_data_length:
         raise ValueError("Data too large for the image.")
 
-    # Create a copy of the image to modify
+    # Copy image
     encoded_image = image.copy()
     binary_index = 0
 
@@ -48,12 +48,12 @@ def encode_lsb(image_path, plaintext_data, output_path):
                     break
             encoded_image.putpixel((x, y), tuple(pixel))
 
-    # Save the encoded image
+    # Output
     encoded_image.save(output_path)
-    print("Data encoded and image saved successfully.")
+    print("Payload encoded and image saved successfully.")
 
 # Example usage:
 if __name__ == "__main__":
     image_path = "example.png"
+    encode_lsb(image_path, shellcode_in_text_file, "poc_{}".format(image_path))
 
-    encode_lsb(image_path, shellcode_as_text_test, f"poc_{image_path}")

