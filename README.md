@@ -28,7 +28,9 @@ buf += b"\xe0\x90\x46\xf3"
 Copy the contents of the shellcode, like above, into a text file and save it!
 ### Picking an image
 
-For this part you can be creative, choose a fairly large image to ensure there is enough space to encode your shellcode. Save this to the same directory you put your shellcode text file in
+For this part you can be creative, choose a fairly large image to ensure there is enough space to encode your shellcode. Save this to the same directory you put your shellcode text file in. 
+
+If you are just playing around with this, `example.png` from this repo works well!
 
 ### Encoding
 
